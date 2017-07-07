@@ -26,7 +26,14 @@ defmodule Todo.Server do
   ###
 
   def start_link do
-    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+    server = Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+
+    todo_lists = :ets.tab2list(Todo.Cache)
+    Enum.map(todo_lists, fn({_, list}) ->
+      add_list(to_string(list.name))
+    end)
+
+    server
   end
 
   def init(_) do
